@@ -1,1 +1,0 @@
-# rikiguntara.github.io
