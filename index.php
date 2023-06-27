@@ -76,9 +76,9 @@
     let today = new Date(),
       dd = String(today.getDate()).padStart(2, "0"),
       mm = String(today.getMonth() + 1).padStart(2, "0"),
-      yyyy = today.getFullYear(),
+      yyyy = 2070,
       nextYear = yyyy + 1,
-      dayMonth = "09/30/",
+      dayMonth = "04/19/",
       birthday = dayMonth + yyyy;
 
     today = mm + "/" + dd + "/" + yyyy;
