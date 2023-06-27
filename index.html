@@ -53,19 +53,75 @@
       font: 20px "Lato", sans-serif;
       color: #111;
     }
+
+    .lds-facebook {
+      display: inline-block;
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+
+    .lds-facebook div {
+      display: inline-block;
+      position: absolute;
+      left: 8px;
+      width: 15px;
+      background: #777;
+      animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+    }
+
+    .lds-facebook div:nth-child(1) {
+      left: 8px;
+      animation-delay: -0.24s;
+    }
+
+    .lds-facebook div:nth-child(2) {
+      left: 32px;
+      animation-delay: -0.12s;
+    }
+
+    .lds-facebook div:nth-child(3) {
+      left: 56px;
+      animation-delay: 0;
+    }
+
+    @keyframes lds-facebook {
+      0% {
+        top: 8px;
+        height: 64px;
+      }
+
+      50%,
+      100% {
+        top: 24px;
+        height: 32px;
+      }
+    }
   </style>
 </head>
 
 <body>
   <div class="bgimg-1">
     <div class="caption">
-      <span class="border">COMING SOON!!!</span><br><br>
-      <span class="border"><span id="days"></span> days | <span id="hours"></span> Hours | <span id="minutes"></span> Minutes | <span id="seconds"></span> Seconds</span>
+      <div class="row" style="padding-bottom: 30px;">
+        <span class="border">COMING SOON!!!</span>
+      </div>
+      <div class="row" style="padding-bottom: 30px;">
+        <span class="border"><span id="days"></span> days | <span id="hours"></span> Hours | <span id="minutes"></span>
+          Minutes | <span id="seconds"></span> Seconds</span>
+      </div>
+      <div class="row">
+        <div class="lds-facebook">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
     </div>
   </div>
 </body>
 <script>
-  (function() {
+  (function () {
     const second = 1000,
       minute = second * 60,
       hour = minute * 60,
@@ -76,7 +132,7 @@
     let today = new Date(),
       dd = String(today.getDate()).padStart(2, "0"),
       mm = String(today.getMonth() + 1).padStart(2, "0"),
-      yyyy = 2070,
+      yyyy = 3000,
       nextYear = yyyy + 1,
       dayMonth = "04/19/",
       birthday = dayMonth + yyyy;
@@ -88,7 +144,7 @@
     //end
 
     const countDown = new Date(birthday).getTime(),
-      x = setInterval(function() {
+      x = setInterval(function () {
 
         const now = new Date().getTime(),
           distance = countDown - now;
