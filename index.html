@@ -1,169 +1,323 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Riki Guntara</title>
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
-  <style media="screen">
-    body,
-    html {
-      height: 100%;
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Reset & Base Styles */
+    * {
+      box-sizing: border-box;
       margin: 0;
-      font: 400 15px/1.8 "Lato", sans-serif;
-      color: #777;
+      padding: 0;
     }
 
-    .bgimg-1,
-    .bgimg-2,
-    .bgimg-3 {
+    body, html {
+      height: 100%;
+      font-family: "Poppins", sans-serif;
+      background-color: #0f172a; /* Warna gelap elegan jika gambar gagal dimuat */
+      color: #f8fafc;
+      overflow: hidden;
+    }
+
+    /* Background Utama dengan Overlay Gelap */
+    .hero-container {
       position: relative;
-      opacity: 0.75;
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.8)), url("bg_compress.jpg");
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
     }
 
-    .bgimg-1 {
-      background-image: url("bg_compress.jpg");
-      height: 100%;
-    }
-
-    .caption {
+    /* Canvas untuk Efek Partikel Interaktif */
+    #particle-canvas {
       position: absolute;
+      top: 0;
       left: 0;
-      top: 50%;
       width: 100%;
-      text-align: center;
-      color: #000;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none; /* Agar tidak menghalangi klik pada tombol */
     }
 
-    .caption span.border {
-      background-color: #111;
-      color: #fff;
-      padding: 20px;
-      font-size: 25px;
-      letter-spacing: 10px;
-
-    }
-
-    h3 {
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      font: 20px "Lato", sans-serif;
-      color: #111;
-    }
-
-    .lds-facebook {
-      display: inline-block;
+    /* Konten Utama - Gaya Glassmorphism */
+    .content-box {
       position: relative;
-      width: 80px;
-      height: 80px;
+      z-index: 3;
+      max-width: 700px;
+      width: 90%;
+      padding: 3rem 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      animation: fadeInUp 1s ease-out;
     }
 
-    .lds-facebook div {
-      display: inline-block;
-      position: absolute;
-      left: 8px;
-      width: 15px;
-      background: #777;
-      animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      background: linear-gradient(45deg, #38bdf8, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .lds-facebook div:nth-child(1) {
-      left: 8px;
-      animation-delay: -0.24s;
+    p.subtitle {
+      font-size: 1rem;
+      color: #94a3b8;
+      margin-bottom: 2.5rem;
+      letter-spacing: 1px;
     }
 
-    .lds-facebook div:nth-child(2) {
-      left: 32px;
-      animation-delay: -0.12s;
+    /* Grid Hitung Mundur */
+    .countdown-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 2.5rem;
     }
 
-    .lds-facebook div:nth-child(3) {
-      left: 56px;
-      animation-delay: 0;
+    .time-segment {
+      background: rgba(15, 23, 42, 0.6);
+      padding: 1rem 0.5rem;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: transform 0.3s ease;
     }
 
-    @keyframes lds-facebook {
-      0% {
-        top: 8px;
-        height: 64px;
+    .time-segment:hover {
+      transform: translateY(-5px);
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .time-number {
+      display: block;
+      font-size: 2rem;
+      font-weight: 600;
+      color: #38bdf8;
+    }
+
+    .time-label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #64748b;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+
+    /* Tombol Interaktif */
+    .cta-btn {
+      background: linear-gradient(45deg, #38bdf8, #0284c7);
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .cta-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
+    }
+
+    .cta-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Animasi Masuk */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
       }
-
-      50%,
-      100% {
-        top: 24px;
-        height: 32px;
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
+    }
+
+    /* Responsif untuk Smartphone */
+    @media (max-width: 500px) {
+      h1 { font-size: 1.8rem; }
+      .countdown-container { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .time-number { font-size: 1.5rem; }
     }
   </style>
 </head>
 
 <body>
-  <div class="bgimg-1">
-    <div class="caption">
-      <div class="row" style="padding-bottom: 30px;">
-        <span class="border">COMING SOON!!!</span>
-      </div>
-      <div class="row" style="padding-bottom: 30px;">
-        <span class="border"><span id="days"></span> days | <span id="hours"></span> Hours | <span id="minutes"></span>
-          Minutes | <span id="seconds"></span> Seconds</span>
-      </div>
-      <div class="row">
-        <div class="lds-facebook">
-          <div></div>
-          <div></div>
-          <div></div>
+
+  <div class="hero-container">
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="content-box">
+      <h1>Coming Soon</h1>
+      <p class="subtitle">Sesuatu yang luar biasa sedang dipersiapkan.</p>
+
+      <div class="countdown-container" id="countdown-box">
+        <div class="time-segment">
+          <span class="time-number" id="days">00</span>
+          <span class="time-label">Hari</span>
+        </div>
+        <div class="time-segment">
+          <span class="time-number" id="hours">00</span>
+          <span class="time-label">Jam</span>
+        </div>
+        <div class="time-segment">
+          <span class="time-number" id="minutes">00</span>
+          <span class="time-label">Menit</span>
+        </div>
+        <div class="time-segment">
+          <span class="time-number" id="seconds">00</span>
+          <span class="time-label">Detik</span>
         </div>
       </div>
+
+      <button class="cta-btn" onclick="notifyMe()">Beri Tahu Saya</button>
     </div>
   </div>
-</body>
-<script>
-  (function () {
-    const second = 1000,
-      minute = second * 60,
-      hour = minute * 60,
-      day = hour * 24;
 
-    //I'm adding this section so I don't have to keep updating this pen every year :-)
-    //remove this if you don't need it
-    let today = new Date(),
-      dd = String(today.getDate()).padStart(2, "0"),
-      mm = String(today.getMonth() + 1).padStart(2, "0"),
-      yyyy = 3000,
-      nextYear = yyyy + 1,
-      dayMonth = "04/19/",
-      birthday = dayMonth + yyyy;
+  <script>
+    // ==========================================
+    // 1. LOGIKA COUNTDOWN (DINAMIS & AKURAT)
+    // ==========================================
+    (function () {
+      const second = 1000,
+            minute = second * 60,
+            hour = minute * 60,
+            day = hour * 24;
 
-    today = mm + "/" + dd + "/" + yyyy;
-    if (today > birthday) {
-      birthday = dayMonth + nextYear;
-    }
-    //end
+      // Target tanggal: 19 April setiap tahunnya
+      const targetMonthDay = "04/19/"; 
+      let currentYear = new Date().getFullYear();
+      let targetDate = new Date(targetMonthDay + currentYear).getTime();
 
-    const countDown = new Date(birthday).getTime(),
-      x = setInterval(function () {
+      // Jika tanggal tahun ini sudah lewat, ganti ke tahun depan
+      if (new Date().getTime() > targetDate) {
+        targetDate = new Date(targetMonthDay + (currentYear + 1)).getTime();
+      }
 
-        const now = new Date().getTime(),
-          distance = countDown - now;
+      const x = setInterval(function () {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
 
-        document.getElementById("days").innerText = Math.floor(distance / (day)),
-          document.getElementById("hours").innerText = Math.floor((distance % (day)) / (hour)),
-          document.getElementById("minutes").innerText = Math.floor((distance % (hour)) / (minute)),
-          document.getElementById("seconds").innerText = Math.floor((distance % (minute)) / second);
+        // Hitung waktu tersisa
+        const d = Math.floor(distance / day);
+        const h = Math.floor((distance % day) / hour);
+        const m = Math.floor((distance % hour) / minute);
+        const s = Math.floor((distance % minute) / second);
 
-        //do something later when date is reached
+        // Update ke DOM dengan format 2 digit (pad Zero)
+        document.getElementById("days").innerText = String(d).padStart(2, "0");
+        document.getElementById("hours").innerText = String(h).padStart(2, "0");
+        document.getElementById("minutes").innerText = String(m).padStart(2, "0");
+        document.getElementById("seconds").innerText = String(s).padStart(2, "0");
+
+        // Ketika waktu habis
         if (distance < 0) {
-          document.getElementById("headline").innerText = "It's my birthday!";
-          document.getElementById("countdown").style.display = "none";
-          document.getElementById("content").style.display = "block";
+          document.getElementById("countdown-box").innerHTML = "<h3 style='grid-column: span 4; color: #38bdf8;'>Acara Telah Dimulai!</h3>";
           clearInterval(x);
         }
-        //seconds
-      }, 0)
-  }());
-</script>
+      }, 1000);
+    }());
 
+    // ==========================================
+    // 2. LOGIKA PARTIKEL INTERAKTIF (CANVAS)
+    // ==========================================
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particlesArray = [];
+
+    // Menyesuaikan ukuran canvas dengan layar
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Objek Partikel
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = Math.random() * 0.5 - 0.25;
+        this.speedY = Math.random() * 0.5 - 0.25;
+        this.opacity = Math.random() * 0.5 + 0.2;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // Memantul jika menabrak dinding layar
+        if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
+        if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
+      }
+
+      draw() {
+        ctx.fillStyle = `rgba(56, 189, 248, ${this.opacity})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Inisialisasi Kumpulan Partikel
+    function initParticles() {
+      particlesArray = [];
+      const numberOfParticles = Math.floor((canvas.width * canvas.height) / 9000);
+      for (let i = 0; i < numberOfParticles; i++) {
+        particlesArray.push(new Particle());
+      }
+    }
+
+    // Menjalankan Animasi secara Loop
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particlesArray.forEach(particle => {
+        particle.update();
+        particle.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    initParticles();
+    animate();
+
+    // ==========================================
+    // 3. FUNGSI INTERAKSI TOMBOL
+    // ==========================================
+    function notifyMe() {
+      alert("Terima kasih! Kami akan memberi tahu Anda begitu halaman ini resmi diluncurkan.");
+    }
+  </script>
+
+</body>
 </html>
