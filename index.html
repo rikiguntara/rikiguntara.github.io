@@ -201,7 +201,7 @@
       <button class="cta-btn" onclick="notifyMe()">Beri Tahu Saya</button>
     </div>
   </div>
-
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script>
     // ==========================================
     // 1. LOGIKA COUNTDOWN (DINAMIS & AKURAT)
@@ -315,7 +315,7 @@
     // 3. FUNGSI INTERAKSI TOMBOL
     // ==========================================
     function notifyMe() {
-      alert("Terima kasih! Kami akan memberi tahu Anda begitu halaman ini resmi diluncurkan.");
+    swal("Terima kasih!", "Kami akan memberi tahu Anda begitu halaman ini resmi diluncurkan!", "success");
     }
   </script>
 
