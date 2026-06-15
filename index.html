@@ -4,23 +4,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Riki Guntara</title>
+  <title>Riki Guntara | Network Terminal</title>
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    .swal-text, .swal-title, .swal-footer {
-      text-align: center !important;
-      display: block !important;
-    }
-
-    .swal2-html-container, .swal2-title {
-      text-align: center !important;
-    }
-
+    /* Reset & Base */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -29,203 +23,272 @@
 
     body, html {
       height: 100%;
-      font-family: "Poppins", sans-serif;
-      background-color: #0f172a; /* Warna gelap elegan jika gambar gagal dimuat */
-      color: #f8fafc;
-      overflow: hidden;
+      font-family: 'Share Tech Mono', monospace;
+      background-color: #020208;
+      color: #00f0ff;
+      overflow-x: hidden;
     }
 
-    /* Background Utama dengan Overlay Gelap */
-    .hero-container {
+    /* Efek Scanline TV Tabung */
+    body::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+      z-index: 10;
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+    }
+
+    .main-wrapper {
       position: relative;
       width: 100%;
-      height: 100%;
-      background-image: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.8)), url("bg_compress.jpg");
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 2rem 0;
       z-index: 1;
     }
 
-    /* Canvas untuk Efek Partikel Interaktif */
-    #particle-canvas {
+    #matrix-canvas {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0; width: 100%; height: 100%;
       z-index: 2;
-      pointer-events: none; /* Agar tidak menghalangi klik pada tombol */
+      opacity: 0.15; /* Latar belakang matrix samar yang elegan */
     }
 
-    /* Konten Utama - Gaya Glassmorphism */
-    .content-box {
+    /* ID Card Panel */
+    .profile-card {
       position: relative;
       z-index: 3;
-      max-width: 700px;
+      max-width: 550px;
       width: 90%;
+      background: rgba(8, 5, 18, 0.85);
+      border: 1px solid #00f0ff;
       padding: 3rem 2rem;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 24px;
       text-align: center;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      animation: fadeInUp 1s ease-out;
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+      clip-path: polygon(0 0, 88% 0, 100% 12%, 100% 100%, 12% 100%, 0 88%);
     }
 
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
+    /* Aksen Sudut Merah */
+    .profile-card::before {
+      content: 'ID: RG-99X';
+      position: absolute;
+      top: 5px; left: 15px;
+      font-size: 0.75rem;
+      color: #ff0055;
       letter-spacing: 2px;
-      margin-bottom: 0.5rem;
+    }
+
+    /* Tempat Foto / Avatar Hologram */
+    .avatar-container {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 1.5rem auto;
+    }
+
+    .avatar-glow {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      border: 2px dashed #00f0ff;
+      border-radius: 50%;
+      animation: spin 20s linear infinite;
+    }
+
+    .avatar-image {
+      position: absolute;
+      top: 10px; left: 10px;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: #111;
+      border: 2px solid #ff0055;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Ganti huruf 'RG' ini dengan tag <img src="foto-kamu.jpg"> jika sudah ada fotonya */
+    .avatar-image span {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 0 8px #ff0055;
+    }
+
+    /* Animasi Nama Glitch */
+    h1.user-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 4px;
+      margin-bottom: 0.2rem;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+    }
+
+    p.user-role {
+      font-size: 0.95rem;
+      color: #ff0055;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      background: linear-gradient(45deg, #38bdf8, #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      margin-bottom: 2rem;
     }
 
-    p.subtitle {
-      font-size: 1rem;
-      color: #94a3b8;
-      margin-bottom: 2.5rem;
-      letter-spacing: 1px;
+    /* Terminal Mini Log */
+    .terminal-log {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      padding: 0.8rem;
+      font-size: 0.8rem;
+      text-align: left;
+      color: #64748b;
+      margin-bottom: 2rem;
+      border-radius: 4px;
     }
+    .terminal-log span { color: #00f0ff; }
 
-    /* Grid Hitung Mundur */
-    .countdown-container {
+    /* HUD Countdown */
+    .hud-timer {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 2.5rem;
     }
 
-    .time-segment {
-      background: rgba(15, 23, 42, 0.6);
-      padding: 1rem 0.5rem;
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: transform 0.3s ease;
+    .timer-node {
+      background: rgba(0, 240, 255, 0.02);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      padding: 0.8rem 0;
     }
 
-    .time-segment:hover {
-      transform: translateY(-5px);
-      border-color: rgba(56, 189, 248, 0.4);
-    }
-
-    .time-number {
+    .node-num {
       display: block;
-      font-size: 2rem;
-      font-weight: 600;
-      color: #38bdf8;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.6rem;
+      color: #fff;
     }
 
-    .time-label {
+    .node-lbl {
       display: block;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      color: #64748b;
-      letter-spacing: 1px;
-      margin-top: 4px;
+      font-size: 0.7rem;
+      color: #00f0ff;
+      opacity: 0.7;
+      margin-top: 2px;
     }
 
-    /* Tombol Interaktif */
-    .cta-btn {
-      background: linear-gradient(45deg, #38bdf8, #0284c7);
-      color: white;
-      border: none;
+    /* Tombol Kontak Terminal */
+    .action-btn {
+      background: transparent;
+      border: 1px solid #ff0055;
+      color: #ff0055;
       padding: 0.8rem 2rem;
-      font-family: inherit;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: 50px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+      width: 100%;
       transition: all 0.3s ease;
+      text-transform: uppercase;
     }
 
-    .cta-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
+    .action-btn:hover {
+      background: #ff0055;
+      color: #fff;
+      box-shadow: 0 0 15px #ff0055;
     }
 
-    .cta-btn:active {
-      transform: scale(0.98);
+    /* Kustomisasi SweetAlert (Tetap Presisi di Tengah) */
+    .personal-swal {
+      background: #080512 !important;
+      border: 1px solid #00f0ff !important;
+      border-radius: 0px !important;
+    }
+    .personal-swal-title {
+      color: #fff !important;
+      font-family: 'Orbitron', sans-serif !important;
+      text-align: center !important;
+    }
+    .personal-swal-text {
+      color: #00f0ff !important;
+      text-align: center !important;
+      font-family: 'Share Tech Mono', monospace !important;
+    }
+    .personal-swal-btn {
+      background: transparent !important;
+      border: 1px solid #ff0055 !important;
+      color: #ff0055 !important;
+      padding: 0.5rem 2rem !important;
+      border-radius: 0px !important;
+    }
+    .personal-swal-btn:hover {
+      background: #ff0055 !important;
+      color: white !important;
     }
 
-    /* Animasi Masuk */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Responsif untuk Smartphone */
-    @media (max-width: 500px) {
-      h1 { font-size: 1.8rem; }
-      .countdown-container { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .time-number { font-size: 1.5rem; }
-    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
   </style>
 </head>
 
 <body>
 
-  <div class="hero-container">
-    <canvas id="particle-canvas"></canvas>
+  <div class="main-wrapper">
+    <canvas id="matrix-canvas"></canvas>
 
-    <div class="content-box">
-      <h1>Coming Soon</h1>
-      <p class="subtitle">Sesuatu yang luar biasa sedang dipersiapkan.</p>
-
-      <div class="countdown-container" id="countdown-box">
-        <div class="time-segment">
-          <span class="time-number" id="days">00</span>
-          <span class="time-label">Hari</span>
-        </div>
-        <div class="time-segment">
-          <span class="time-number" id="hours">00</span>
-          <span class="time-label">Jam</span>
-        </div>
-        <div class="time-segment">
-          <span class="time-number" id="minutes">00</span>
-          <span class="time-label">Menit</span>
-        </div>
-        <div class="time-segment">
-          <span class="time-number" id="seconds">00</span>
-          <span class="time-label">Detik</span>
+    <div class="profile-card">
+      
+      <div class="avatar-container">
+        <div class="avatar-glow"></div>
+        <div class="avatar-image">
+          <span>RG</span> 
         </div>
       </div>
 
-      <button class="cta-btn" onclick="notifyMe()">Beri Tahu Saya</button>
+      <h1 class="user-name">RIKI GUNTARA</h1>
+      <p class="user-role">// DIGITAL CREATIVE & DEVELOPER</p>
+
+      <div class="terminal-log">
+        > STATUS: <span>ONLINE</span><br>
+        > HOST: <span>RIKI_GUNTARA//NODE_01</span><br>
+        > DEPLOYMENT: <span>IN PROGRESS...</span>
+      </div>
+
+      <div class="hud-timer" id="timer-display">
+        <div class="timer-node">
+          <span class="node-num" id="days">00</span>
+          <span class="node-lbl">DAYS</span>
+        </div>
+        <div class="timer-node">
+          <span class="node-num" id="hours">00</span>
+          <span class="node-lbl">HOURS</span>
+        </div>
+        <div class="timer-node">
+          <span class="node-num" id="minutes">00</span>
+          <span class="node-lbl">MINS</span>
+        </div>
+        <div class="timer-node">
+          <span class="node-num" id="seconds">00</span>
+          <span class="node-lbl">SECS</span>
+        </div>
+      </div>
+
+      <button class="action-btn" onclick="openTerminal()">Establish Connection</button>
     </div>
   </div>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <script>
-    // ==========================================
-    // 1. LOGIKA COUNTDOWN (DINAMIS & AKURAT)
-    // ==========================================
-    (function () {
-      const second = 1000,
-            minute = second * 60,
-            hour = minute * 60,
-            day = hour * 24;
 
-      // Target tanggal: 19 April setiap tahunnya
+  <script>
+    (function () {
+      const second = 1000, minute = second * 60, hour = minute * 60, day = hour * 24;
       const targetMonthDay = "04/19/"; 
       let currentYear = new Date().getFullYear();
       let targetDate = new Date(targetMonthDay + currentYear).getTime();
 
-      // Jika tanggal tahun ini sudah lewat, ganti ke tahun depan
       if (new Date().getTime() > targetDate) {
         targetDate = new Date(targetMonthDay + (currentYear + 1)).getTime();
       }
@@ -234,96 +297,66 @@
         const now = new Date().getTime();
         const distance = targetDate - now;
 
-        // Hitung waktu tersisa
-        const d = Math.floor(distance / day);
-        const h = Math.floor((distance % day) / hour);
-        const m = Math.floor((distance % hour) / minute);
-        const s = Math.floor((distance % minute) / second);
+        document.getElementById("days").innerText = String(Math.floor(distance / day)).padStart(2, "0");
+        document.getElementById("hours").innerText = String(Math.floor((distance % day) / hour)).padStart(2, "0");
+        document.getElementById("minutes").innerText = String(Math.floor((distance % hour) / minute)).padStart(2, "0");
+        document.getElementById("seconds").innerText = String(Math.floor((distance % minute) / second)).padStart(2, "0");
 
-        // Update ke DOM dengan format 2 digit (pad Zero)
-        document.getElementById("days").innerText = String(d).padStart(2, "0");
-        document.getElementById("hours").innerText = String(h).padStart(2, "0");
-        document.getElementById("minutes").innerText = String(m).padStart(2, "0");
-        document.getElementById("seconds").innerText = String(s).padStart(2, "0");
-
-        // Ketika waktu habis
         if (distance < 0) {
-          document.getElementById("countdown-box").innerHTML = "<h3 style='grid-column: span 4; color: #38bdf8;'>Acara Telah Dimulai!</h3>";
+          document.getElementById("timer-display").innerHTML = "<div style='grid-column: span 4; color: #ff0055;'>WELCOME TO THE NEXT LEVEL.</div>";
           clearInterval(x);
         }
       }, 1000);
     }());
 
-    // ==========================================
-    // 2. LOGIKA PARTIKEL INTERAKTIF (CANVAS)
-    // ==========================================
-    const canvas = document.getElementById('particle-canvas');
+    const canvas = document.getElementById('matrix-canvas');
     const ctx = canvas.getContext('2d');
-    let particlesArray = [];
 
-    // Menyesuaikan ukuran canvas dengan layar
-    function resizeCanvas() {
+    function resize() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+    window.addEventListener('resize', resize);
+    resize();
 
-    // Objek Partikel
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 0.5;
-        this.speedX = Math.random() * 0.5 - 0.25;
-        this.speedY = Math.random() * 0.5 - 0.25;
-        this.opacity = Math.random() * 0.5 + 0.2;
-      }
+    const letters = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const fontSize = 14;
+    let columns = canvas.width / fontSize;
+    let drops = Array(Math.floor(columns)).fill(1);
 
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(2, 2, 8, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Memantul jika menabrak dinding layar
-        if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
-        if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
-      }
+      ctx.fillStyle = '#00f0ff';
+      ctx.font = fontSize + 'px monospace';
 
-      draw() {
-        ctx.fillStyle = `rgba(56, 189, 248, ${this.opacity})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
       }
     }
-
-    // Inisialisasi Kumpulan Partikel
-    function initParticles() {
-      particlesArray = [];
-      const numberOfParticles = Math.floor((canvas.width * canvas.height) / 9000);
-      for (let i = 0; i < numberOfParticles; i++) {
-        particlesArray.push(new Particle());
-      }
-    }
-
-    // Menjalankan Animasi secara Loop
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particlesArray.forEach(particle => {
-        particle.update();
-        particle.draw();
+    setInterval(drawMatrix, 40);
+    function openTerminal() {
+      Swal.fire({
+        title: 'CONNECTED',
+        html: 'Uplink ke jaringan Riki Guntara berhasil dibuka. <br><br><i>"The future belongs to those who build it."</i>',
+        icon: 'info',
+        iconColor: '#00f0ff',
+        confirmButtonText: 'CLOSE TERMINAL',
+        customClass: {
+          popup: 'personal-swal',
+          title: 'personal-swal-title',
+          htmlContainer: 'personal-swal-text',
+          confirmButton: 'personal-swal-btn'
+        },
+        buttonsStyling: false
       });
-      requestAnimationFrame(animate);
-    }
-
-    initParticles();
-    animate();
-
-    // ==========================================
-    // 3. FUNGSI INTERAKSI TOMBOL
-    // ==========================================
-    function notifyMe() {
-    swal("Terima kasih!", "Kami akan memberi tahu Anda begitu halaman ini resmi diluncurkan!", "success");
     }
   </script>
 
